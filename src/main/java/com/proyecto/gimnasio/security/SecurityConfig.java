@@ -1,3 +1,4 @@
+
 package com.proyecto.gimnasio.security;
 
 import java.util.concurrent.ExecutionException;
@@ -24,13 +25,30 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .csrf(csrf -> csrf.disable())
                 .headers(h -> h.frameOptions(f -> f.sameOrigin()));
+
             return http.build();
         }
 
         http
             .authorizeHttpRequests(auth -> auth
+
+                // Acceso público
                 .requestMatchers("/login", "/h2-console/**").permitAll()
 
+                // Reservaciones: administrador
+                .requestMatchers("/reservaciones").hasRole("ADMIN")
+
+                .requestMatchers("/reservaciones/*/cancelar")
+                .hasAnyRole("ADMIN", "CLIENTE")
+
+                // Reservaciones: cliente
+                .requestMatchers(
+                    "/reservaciones/nueva",
+                    "/reservaciones/guardar",
+                    "/reservaciones/mis-reservaciones"
+                ).hasRole("CLIENTE")
+
+                // Gestión de clientes: administrador
                 .requestMatchers(
                     "/clientes/nuevo",
                     "/clientes/*/editar",
@@ -38,14 +56,17 @@ public class SecurityConfig {
                     "/clientes/*/eliminar"
                 ).hasRole("ADMIN")
 
+                // Consulta de clientes
                 .requestMatchers(
                     "/clientes",
                     "/clientes/*"
                 ).authenticated()
 
+                // Cualquier otra ruta requiere autenticación
                 .anyRequest().authenticated()
             )
 
+            // Inicio de sesión
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/clientes", true)
@@ -53,12 +74,15 @@ public class SecurityConfig {
                 .permitAll()
             )
 
+            // Cierre de sesión
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
             )
 
+            // Protección CSRF
             .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
+
             .headers(h -> h.frameOptions(f -> f.sameOrigin()));
 
         return http.build();

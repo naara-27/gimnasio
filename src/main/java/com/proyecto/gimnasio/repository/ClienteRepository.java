@@ -1,7 +1,7 @@
 package com.proyecto.gimnasio.repository;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,4 +16,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     boolean existsByCedula(String cedula);
 
     List<Cliente> findByNombreContainingIgnoreCaseOrCedulaContainingIgnoreCase(String nombre, String cedula);
+
+    List<Cliente> findByRolAndActivoTrue(String rol);
 }
