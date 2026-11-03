@@ -38,7 +38,7 @@ public class ClienteController {
 
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("cliente") Cliente cliente,
-                          BindingResult errores, Model model, RedirectAttributes flash) {
+            BindingResult errores, Model model, RedirectAttributes flash) {
 
         if (errores.hasErrors()) {
             model.addAttribute("modo", "crear");
@@ -67,8 +67,8 @@ public class ClienteController {
 
     @PostMapping("/{id}/actualizar")
     public String actualizar(@PathVariable Long id,
-                             @Valid @ModelAttribute("cliente") Cliente cliente,
-                             BindingResult errores, Model model, RedirectAttributes flash) {
+            @Valid @ModelAttribute("cliente") Cliente cliente,
+            BindingResult errores, Model model, RedirectAttributes flash) {
 
         if (errores.hasErrors()) {
             model.addAttribute("modo", "editar");
@@ -88,8 +88,8 @@ public class ClienteController {
 
     @PostMapping("/{id}/eliminar")
     public String eliminar(@PathVariable Long id,
-                           RedirectAttributes flash,
-                           Principal principal) {
+            RedirectAttributes flash,
+            Principal principal) {
 
         try {
             service.eliminar(id, principal.getName());
@@ -103,8 +103,8 @@ public class ClienteController {
 
     @GetMapping("/{id}")
     public String detalle(@PathVariable Long id,
-                          Model model,
-                          RedirectAttributes flash) {
+            Model model,
+            RedirectAttributes flash) {
 
         Cliente c = service.buscarPorId(id);
 
@@ -117,5 +117,27 @@ public class ClienteController {
         model.addAttribute("cliente", c);
 
         return "clientes/detalle";
+    }
+
+    @GetMapping("/recuperar-password")
+    public String recuperarForm(Model model) {
+        model.addAttribute("email", "");
+        return "recuperar-password";
+    }
+
+    @PostMapping("/recuperar-password")
+    public String recuperar(@RequestParam String email,
+            RedirectAttributes flash) {
+
+        if (service.existeEmail(email)) {
+            flash.addFlashAttribute("mensaje",
+                    "El correo ingresado está registrado. Puede proceder a reestablecer su contraseña.");
+            flash.addFlashAttribute("email", email);
+            return "redirect:/clientes/recuperar-password";
+        }
+
+        flash.addFlashAttribute("error",
+                "El correo ingresado no se encuentra registrado.");
+        return "redirect:/clientes/recuperar-password";
     }
 }

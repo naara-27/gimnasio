@@ -15,38 +15,42 @@ public class ClienteService {
     private final ClienteRepository repo;
     private final PasswordEncoder passwordEncoder;
 
-    public ClienteService(ClienteRepository repo, PasswordEncoder passwordEncoder){
+    public ClienteService(ClienteRepository repo, PasswordEncoder passwordEncoder) {
         this.repo = repo;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<Cliente> listar(){
+    public List<Cliente> listar() {
         return repo.findAll();
     }
 
-    public List<Cliente> buscar(String q){
+    public List<Cliente> buscar(String q) {
         if (q == null || q.isBlank()) {
             return repo.findAll();
         }
         return repo.findByNombreContainingIgnoreCaseOrCedulaContainingIgnoreCase(q, q);
     }
 
-    public Cliente buscarPorId(Long id){
+    public Cliente buscarPorId(Long id) {
         return repo.findById(id).orElse(null);
     }
 
-    @Transactional
-    public Cliente crear(Cliente cliente){
+    public boolean existeEmail(String email) {
+        return repo.existsByEmail(email);
+    }
 
-        if (repo.existsByCedula(cliente.getCedula())){
+    @Transactional
+    public Cliente crear(Cliente cliente) {
+
+        if (repo.existsByCedula(cliente.getCedula())) {
             throw new IllegalArgumentException("La cédula ya está registrada");
         }
 
-        if (repo.existsByEmail(cliente.getEmail())){
+        if (repo.existsByEmail(cliente.getEmail())) {
             throw new IllegalArgumentException("El correo ya está registrado");
         }
 
-        if(cliente.getPassword() == null || cliente.getPassword().isBlank()){
+        if (cliente.getPassword() == null || cliente.getPassword().isBlank()) {
             throw new IllegalArgumentException("La contraseña es obligatoria");
         }
 
@@ -56,21 +60,21 @@ public class ClienteService {
     }
 
     @Transactional
-    public Cliente actualizar(Long id, Cliente datos){
+    public Cliente actualizar(Long id, Cliente datos) {
 
         Cliente existente = buscarPorId(id);
 
-        if(existente == null){
+        if (existente == null) {
             throw new IllegalArgumentException("Cliente no encontrado " + id);
         }
 
-        if(!existente.getCedula().equals(datos.getCedula())
-            && repo.existsByCedula(datos.getCedula())){
+        if (!existente.getCedula().equals(datos.getCedula())
+                && repo.existsByCedula(datos.getCedula())) {
             throw new IllegalArgumentException("La cédula ya está registrada");
         }
 
-        if(!existente.getEmail().equals(datos.getEmail())
-            && repo.existsByEmail(datos.getEmail())){
+        if (!existente.getEmail().equals(datos.getEmail())
+                && repo.existsByEmail(datos.getEmail())) {
             throw new IllegalArgumentException("El correo ya está registrado");
         }
 
@@ -81,7 +85,7 @@ public class ClienteService {
         existente.setTelefono(datos.getTelefono());
         existente.setActivo(datos.isActivo());
 
-        if(datos.getPassword() != null && !datos.getPassword().isBlank()){
+        if (datos.getPassword() != null && !datos.getPassword().isBlank()) {
             existente.setPassword(passwordEncoder.encode(datos.getPassword()));
         }
 
@@ -89,16 +93,16 @@ public class ClienteService {
     }
 
     @Transactional
-    public void eliminar(Long id, String emailActual){
+    public void eliminar(Long id, String emailActual) {
 
         Cliente existente = buscarPorId(id);
 
-        if(existente == null){
+        if (existente == null) {
             throw new IllegalArgumentException("Cliente no encontrado " + id);
         }
 
-        if(existente.getEmail().equals(emailActual)
-                && existente.getRol().equals("ADMIN")){
+        if (existente.getEmail().equals(emailActual)
+                && existente.getRol().equals("ADMIN")) {
             throw new IllegalArgumentException("No puedes eliminar tu propia cuenta de administrador");
         }
 
