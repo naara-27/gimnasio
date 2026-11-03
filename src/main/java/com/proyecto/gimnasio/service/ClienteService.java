@@ -40,6 +40,20 @@ public class ClienteService {
     }
 
     @Transactional
+    public void actualizarPassword(String email, String nuevaPassword) {
+
+        Cliente cliente = repo.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("El correo no se encuentra registrado."));
+
+        if (nuevaPassword == null || nuevaPassword.isBlank()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria.");
+        }
+
+        cliente.setPassword(passwordEncoder.encode(nuevaPassword));
+        repo.save(cliente);
+    }
+
+    @Transactional
     public Cliente crear(Cliente cliente) {
 
         if (repo.existsByCedula(cliente.getCedula())) {

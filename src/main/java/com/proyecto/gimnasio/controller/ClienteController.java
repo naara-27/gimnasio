@@ -132,12 +132,40 @@ public class ClienteController {
         if (service.existeEmail(email)) {
             flash.addFlashAttribute("mensaje",
                     "El correo ingresado está registrado. Puede proceder a reestablecer su contraseña.");
-            flash.addFlashAttribute("email", email);
-            return "redirect:/clientes/recuperar-password";
+            return "redirect:/clientes/reset-password?email=" + email;
         }
 
         flash.addFlashAttribute("error",
                 "El correo ingresado no se encuentra registrado.");
         return "redirect:/clientes/recuperar-password";
+    }
+
+    @GetMapping("/reset-password")
+    public String resetForm(@RequestParam(required = false) String email, Model model) {
+        model.addAttribute("email", email != null ? email : "");
+        return "reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestParam String email,
+            @RequestParam String password,
+            @RequestParam String confirmPassword,
+            RedirectAttributes flash) {
+
+        if (!password.equals(confirmPassword)) {
+            flash.addFlashAttribute("error", "Las contraseñas no coinciden.");
+            flash.addFlashAttribute("email", email);
+            return "redirect:/clientes/reset-password?email=" + email;
+        }
+
+        try {
+            service.actualizarPassword(email, password);
+            flash.addFlashAttribute("mensaje", "Contraseña actualizada correctamente.");
+            return "redirect:/login";
+        } catch (IllegalArgumentException e) {
+            flash.addFlashAttribute("error", e.getMessage());
+            flash.addFlashAttribute("email", email);
+            return "redirect:/clientes/reset-password?email=" + email;
+        }
     }
 }
