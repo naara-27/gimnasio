@@ -74,13 +74,27 @@ public class ClienteService {
             throw new IllegalArgumentException("El teléfono es requerido");
         }
 
-        if (!existente.getCedula().equals(clienteForm.getCedula())
-                && repo.existsByCedula(clienteForm.getCedula())) {
-            throw new IllegalArgumentException("La cédula ya está registrada");
+        // Validar cédula: si cambió, que no pertenezca a otro cliente
+        if (!existente.getCedula().equals(clienteForm.getCedula())) {
+            repo.findByCedula(clienteForm.getCedula()).ifPresent(duplicado -> {
+                if (!duplicado.getId().equals(existente.getId())) {
+                    throw new IllegalArgumentException("La cédula ya se encuentra registrada por otro usuario");
+                }
+            });
+        }
+
+        // Validar correo: si cambió, que no pertenezca a otro cliente
+        if (!existente.getEmail().equals(clienteForm.getEmail())) {
+            repo.findByEmail(clienteForm.getEmail()).ifPresent(duplicado -> {
+                if (!duplicado.getId().equals(existente.getId())) {
+                    throw new IllegalArgumentException("El correo ya se encuentra registrado por otro usuario");
+                }
+            });
         }
 
         existente.setNombre(clienteForm.getNombre());
         existente.setCedula(clienteForm.getCedula());
+        existente.setEmail(clienteForm.getEmail());
         existente.setTelefono(clienteForm.getTelefono());
 
         if (nuevaPassword != null && !nuevaPassword.isBlank()) {

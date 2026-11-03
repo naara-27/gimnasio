@@ -15,6 +15,8 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
     boolean existsByCedula(String cedula);
 
+    Optional<Cliente> findByCedula(String cedula);
+
     List<Cliente> findByNombreContainingIgnoreCaseOrCedulaContainingIgnoreCase(String nombre, String cedula);
 
     List<Cliente> findByRolAndActivoTrue(String rol);

@@ -58,8 +58,15 @@ public class PerfilController {
             flash.addFlashAttribute("mensaje", "Perfil actualizado correctamente.");
             return "redirect:/clientes/perfil";
         } catch (IllegalArgumentException e) {
-            flash.addFlashAttribute("error", e.getMessage());
-            return "redirect:/clientes/perfil";
+            String mensaje = e.getMessage();
+            if (mensaje != null && mensaje.contains("cédula")) {
+                errores.rejectValue("cedula", "error.cedula", mensaje);
+            } else if (mensaje != null && mensaje.contains("correo")) {
+                errores.rejectValue("email", "error.email", mensaje);
+            } else {
+                errores.reject("error.global", mensaje);
+            }
+            return "clientes/perfil";
         }
     }
 }

@@ -28,7 +28,6 @@
                 <form th:action="@{/perfil/actualizar}" method="post" th:object="${cliente}">
 
                     <input type="hidden" th:field="*{id}">
-                    <input type="hidden" th:field="*{email}">
                     <input type="hidden" th:field="*{rol}">
                     <input type="hidden" th:field="*{activo}">
 
@@ -55,7 +54,9 @@
 
                     <div class="mb-3">
                         <label class="form-label">Correo Electrónico</label>
-                        <input type="email" th:field="*{email}" class="form-control" readonly>
+                        <input type="email" th:field="*{email}" class="form-control"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{email}"></div>
                     </div>
 
                     <div class="mb-3">
