@@ -44,6 +44,10 @@ public class SecurityConfig {
                                                 .requestMatchers("/reservaciones/*/cancelar")
                                                 .hasAnyRole("ADMIN", "CLIENTE")
 
+                                                // Gestión de clases: solo administrador y entrenador
+                                                .requestMatchers("/clases", "/clases/**")
+                                                .hasAnyRole("ADMIN", "ENTRENADOR")
+
                                                 // Reservaciones: cliente
                                                 .requestMatchers(
                                                                 "/reservaciones/nueva",
