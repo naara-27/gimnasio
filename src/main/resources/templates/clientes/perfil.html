@@ -9,6 +9,7 @@
     <nav class="navbar navbar-dark bg-dark px-3">
         <span class="navbar-brand">Gestión de Clientes</span>
         <div class="d-flex align-items-center gap-3">
+            <a th:href="@{/clientes/perfil}" class="text-white text-decoration-none">Mi Perfil</a>
             <span class="text-white">Hola, <b sec:authentication="name"></b></span>
             <form th:action="@{/logout}" method="post">
                 <button class="btn btn-outline-light btn-sm">Salir</button>
@@ -24,31 +25,59 @@
 
         <div class="card">
             <div class="card-body">
-                <p><b>Nombre:</b> <span th:text="${cliente.nombre}"></span></p>
+                <form th:action="@{/perfil/actualizar}" method="post" th:object="${cliente}">
 
-                <p><b>Cédula:</b> <span th:text="${cliente.cedula}"></span></p>
+                    <input type="hidden" th:field="*{id}">
+                    <input type="hidden" th:field="*{email}">
+                    <input type="hidden" th:field="*{rol}">
+                    <input type="hidden" th:field="*{activo}">
 
-                <p><b>Teléfono:</b> <span th:text="${cliente.telefono}"></span></p>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" th:field="*{nombre}" class="form-control"
+                               th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{nombre}"></div>
+                    </div>
 
-                <p><b>Correo:</b> <span th:text="${cliente.email}"></span></p>
+                    <div class="mb-3">
+                        <label class="form-label">Cédula</label>
+                        <input type="text" th:field="*{cedula}" class="form-control"
+                               th:classappend="${#fields.hasErrors('cedula')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{cedula}"></div>
+                    </div>
 
-                <p>
-                    <b>Rol:</b>
-                    <span th:text="${cliente.rol}"></span>
-                </p>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" th:field="*{telefono}" class="form-control"
+                               th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{telefono}"></div>
+                    </div>
 
-                <p>
-                    <b>Estado:</b>
-                    <span th:classappend="${cliente.activo} ? 'bg-success' : 'bg-secondary'"
-                          class="badge"
-                          th:text="${cliente.activo} ? 'Activo' : 'Inactivo'">
-                    </span>
-                </p>
+                    <div class="mb-3">
+                        <label class="form-label">Correo Electrónico</label>
+                        <input type="email" th:field="*{email}" class="form-control" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nueva Contraseña (opcional)</label>
+                        <input type="password" name="nuevaPassword" class="form-control"
+                               placeholder="Dejar vacío para no cambiarla">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Confirmar Contraseña</label>
+                        <input type="password" name="confirmPassword" class="form-control"
+                               placeholder="Confirme la nueva contraseña">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Actualizar Perfil</button>
+                    <a th:href="@{/clientes/perfil}" class="btn btn-secondary">Cancelar</a>
+                </form>
             </div>
         </div>
 
         <div class="mt-3">
-            <a th:href="@{/clientes}" class="btn btn-secondary">Volver al listado</a>
+            <a th:href="@{/clientes}" class="btn btn-outline-secondary">Volver al listado</a>
         </div>
     </div>
 </body>

@@ -59,6 +59,38 @@ public class ClienteService {
     }
 
     @Transactional
+    public Cliente actualizarPerfilCliente(Cliente clienteForm, String nuevaPassword) {
+
+        Cliente existente = repo.findById(clienteForm.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
+
+        if (clienteForm.getNombre() == null || clienteForm.getNombre().isBlank()) {
+            throw new IllegalArgumentException("El nombre es requerido");
+        }
+        if (clienteForm.getCedula() == null || clienteForm.getCedula().isBlank()) {
+            throw new IllegalArgumentException("La cédula es requerida");
+        }
+        if (clienteForm.getTelefono() == null || clienteForm.getTelefono().isBlank()) {
+            throw new IllegalArgumentException("El teléfono es requerido");
+        }
+
+        if (!existente.getCedula().equals(clienteForm.getCedula())
+                && repo.existsByCedula(clienteForm.getCedula())) {
+            throw new IllegalArgumentException("La cédula ya está registrada");
+        }
+
+        existente.setNombre(clienteForm.getNombre());
+        existente.setCedula(clienteForm.getCedula());
+        existente.setTelefono(clienteForm.getTelefono());
+
+        if (nuevaPassword != null && !nuevaPassword.isBlank()) {
+            existente.setPassword(passwordEncoder.encode(nuevaPassword));
+        }
+
+        return repo.save(existente);
+    }
+
+    @Transactional
     public Cliente crear(Cliente cliente) {
 
         if (repo.existsByCedula(cliente.getCedula())) {

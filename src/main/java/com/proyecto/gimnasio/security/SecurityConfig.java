@@ -60,7 +60,8 @@ public class SecurityConfig {
                                                 .hasRole("ADMIN")
 
                                                 // Perfil del cliente autenticado (CLIENTE y ADMIN)
-                                                .requestMatchers("/perfil", "/clientes/perfil")
+                                                .requestMatchers("/perfil", "/clientes/perfil",
+                                                                "/perfil/actualizar", "/clientes/perfil/actualizar")
                                                 .hasAnyRole("CLIENTE", "ADMIN")
 
                                                 // Consulta de clientes
