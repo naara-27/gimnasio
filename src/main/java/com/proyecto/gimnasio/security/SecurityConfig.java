@@ -59,6 +59,10 @@ public class SecurityConfig {
                                                                 "/clientes/*/eliminar")
                                                 .hasRole("ADMIN")
 
+                                                // Perfil del cliente autenticado (CLIENTE y ADMIN)
+                                                .requestMatchers("/perfil", "/clientes/perfil")
+                                                .hasAnyRole("CLIENTE", "ADMIN")
+
                                                 // Consulta de clientes
                                                 .requestMatchers(
                                                                 "/clientes",

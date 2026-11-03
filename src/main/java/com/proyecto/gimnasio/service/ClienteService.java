@@ -39,6 +39,11 @@ public class ClienteService {
         return repo.existsByEmail(email);
     }
 
+    public Cliente buscarPorEmail(String email) {
+        return repo.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("El cliente con email " + email + " no existe."));
+    }
+
     @Transactional
     public void actualizarPassword(String email, String nuevaPassword) {
 

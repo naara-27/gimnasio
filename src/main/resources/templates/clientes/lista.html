@@ -9,6 +9,7 @@
     <nav class="navbar navbar-dark bg-dark px-3">
         <span class="navbar-brand">Gestión de Clientes</span>
         <div class="d-flex align-items-center gap-3">
+            <a th:href="@{/clientes/perfil}" class="text-white text-decoration-none">Mi Perfil</a>
             <span class="text-white">Hola, <b sec:authentication="name"></b></span>
             <form th:action="@{/logout}" method="post">
                 <button class="btn btn-outline-light btn-sm">Salir</button>
