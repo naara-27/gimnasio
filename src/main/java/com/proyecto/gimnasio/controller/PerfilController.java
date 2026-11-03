@@ -30,7 +30,21 @@ public class PerfilController {
     public String actualizarPerfil(@ModelAttribute("cliente") Cliente cliente,
             @RequestParam(required = false) String nuevaPassword,
             @RequestParam(required = false) String confirmPassword,
+            Authentication authentication,
             BindingResult errores, RedirectAttributes flash) {
+
+        // Validación de ownership: el ID enviado en el formulario debe coincidir
+        // estrictamente con el usuario autenticado. Esto previene manipulaciones
+        // de parámetros HTTP (IDs alterados en campos ocultos).
+        Cliente clienteAutenticado = service.buscarPorEmail(authentication.getName());
+        boolean esAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!esAdmin && !clienteAutenticado.getId().equals(cliente.getId())) {
+            errores.reject("error.perfil",
+                    "No tiene permisos para modificar el perfil de otro cliente.");
+            return "clientes/perfil";
+        }
 
         if (cliente.getNombre() == null || cliente.getNombre().isBlank()) {
             errores.rejectValue("nombre", "error.nombre", "El nombre es requerido");

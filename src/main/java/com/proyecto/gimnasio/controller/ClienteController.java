@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 
 import java.security.Principal;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -104,7 +105,20 @@ public class ClienteController {
     @GetMapping("/{id}")
     public String detalle(@PathVariable Long id,
             Model model,
-            RedirectAttributes flash) {
+            RedirectAttributes flash,
+            Authentication authentication) {
+
+        Cliente clienteAutenticado = service.buscarPorEmail(authentication.getName());
+        boolean esAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        // Validación de ownership: un cliente no-admin solo puede ver su propio
+        // detalle.
+        if (!esAdmin && !clienteAutenticado.getId().equals(id)) {
+            flash.addFlashAttribute("error",
+                    "No tiene permisos para ver el perfil de otro cliente.");
+            return "redirect:/clientes/perfil";
+        }
 
         Cliente c = service.buscarPorId(id);
 
