@@ -7,139 +7,131 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.proyecto.gimnasio.model.ClaseGimnasio;
-import com.proyecto.gimnasio.model.Cliente;
+import com.proyecto.gimnasio.model.Usuario;
 import com.proyecto.gimnasio.model.Reservacion;
 import com.proyecto.gimnasio.repository.ClaseGimnasioRepository;
-import com.proyecto.gimnasio.repository.ClienteRepository;
+import com.proyecto.gimnasio.repository.UsuarioRepository;
 import com.proyecto.gimnasio.repository.ReservacionRepository;
 
 @Service
 public class ReservacionService {
 
-    private final ReservacionRepository reservacionRepository;
-    private final ClienteRepository clienteRepository;
-    private final ClaseGimnasioRepository claseRepository;
+        private final ReservacionRepository reservacionRepository;
+        private final UsuarioRepository clienteRepository;
+        private final ClaseGimnasioRepository claseRepository;
 
-    public ReservacionService(
-            ReservacionRepository reservacionRepository,
-            ClienteRepository clienteRepository,
-            ClaseGimnasioRepository claseRepository) {
+        public ReservacionService(
+                        ReservacionRepository reservacionRepository,
+                        UsuarioRepository clienteRepository,
+                        ClaseGimnasioRepository claseRepository) {
 
-        this.reservacionRepository = reservacionRepository;
-        this.clienteRepository = clienteRepository;
-        this.claseRepository = claseRepository;
-    }
-
-    // Listar todas las reservaciones
-    public List<Reservacion> listar() {
-        return reservacionRepository.findAll();
-    }
-
-    // Consultar reservaciones de un cliente
-    public List<Reservacion> listarPorCliente(Long clienteId) {
-        return reservacionRepository.findByClienteId(clienteId);
-    }
-
-    // Registrar una reservación
-    @Transactional
-    public Reservacion reservar(Long clienteId, Long claseId) {
-
-        Cliente cliente = clienteRepository.findById(clienteId)
-                .orElseThrow(() ->
-                        new RuntimeException("No se encontró el cliente"));
-
-        ClaseGimnasio clase = claseRepository.findById(claseId)
-                .orElseThrow(() ->
-                        new RuntimeException("No se encontró la clase"));
-
-        if (!cliente.isActivo()
-                || !"CLIENTE".equalsIgnoreCase(cliente.getRol())) {
-            throw new RuntimeException(
-                    "Solo los clientes activos pueden reservar clases");
+                this.reservacionRepository = reservacionRepository;
+                this.clienteRepository = clienteRepository;
+                this.claseRepository = claseRepository;
         }
 
-        String nombreClase = clase.getNombre().trim().toLowerCase();
-
-        boolean yaReservo = reservacionRepository
-                .existsByClienteIdAndNombreClaseAndEstado(
-                        clienteId, nombreClase, "CONFIRMADA");
-
-        if (yaReservo) {
-            throw new RuntimeException(
-                    "Ya tiene una reservación para esta clase, aunque sea con otro entrenador");
+        // Listar todas las reservaciones
+        public List<Reservacion> listar() {
+                return reservacionRepository.findAll();
         }
 
-        long ocupados = reservacionRepository
-                .countByClaseIdAndEstado(claseId, "CONFIRMADA");
-
-        if (ocupados >= clase.getCupoMaximo()) {
-            throw new RuntimeException(
-                    "La clase ya alcanzó su cupo máximo");
+        // Consultar reservaciones de un cliente
+        public List<Reservacion> listarPorCliente(Long clienteId) {
+                return reservacionRepository.findByClienteId(clienteId);
         }
 
-        Reservacion reservacion = new Reservacion();
-        reservacion.setCliente(cliente);
-        reservacion.setClase(clase);
-        reservacion.setEstado("CONFIRMADA");
+        // Registrar una reservación
+        @Transactional
+        public Reservacion reservar(Long clienteId, Long claseId) {
 
-        return reservacionRepository.save(reservacion);
-    }
+                Usuario cliente = clienteRepository.findById(clienteId)
+                                .orElseThrow(() -> new RuntimeException("No se encontró el cliente"));
 
-    // Cancelar una reservación
-    @Transactional
-    public void cancelar(Long id) {
+                ClaseGimnasio clase = claseRepository.findById(claseId)
+                                .orElseThrow(() -> new RuntimeException("No se encontró la clase"));
 
-        Reservacion reservacion = reservacionRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("No se encontró la reservación"));
+                if (!cliente.isActivo()
+                                || !"CLIENTE".equalsIgnoreCase(cliente.getRol())) {
+                        throw new RuntimeException(
+                                        "Solo los usuarios activos pueden reservar clases");
+                }
 
-        reservacion.setEstado("CANCELADA");
+                String nombreClase = clase.getNombre().trim().toLowerCase();
 
-        reservacionRepository.save(reservacion);
-    }
+                boolean yaReservo = reservacionRepository
+                                .existsByClienteIdAndNombreClaseAndEstado(
+                                                clienteId, nombreClase, "CONFIRMADA");
 
-    // Contar espacios ocupados
-    public long contarOcupados(Long claseId) {
-        return reservacionRepository
-                .countByClaseIdAndEstado(claseId, "CONFIRMADA");
-    }
+                if (yaReservo) {
+                        throw new RuntimeException(
+                                        "Ya tiene una reservación para esta clase, aunque sea con otro entrenador");
+                }
 
-    // Calcular espacios disponibles
-    public long contarDisponibles(ClaseGimnasio clase) {
-        long ocupados = contarOcupados(clase.getId());
+                long ocupados = reservacionRepository
+                                .countByClaseIdAndEstado(claseId, "CONFIRMADA");
 
-        return Math.max(0, clase.getCupoMaximo() - ocupados);
-    }
+                if (ocupados >= clase.getCupoMaximo()) {
+                        throw new RuntimeException(
+                                        "La clase ya alcanzó su cupo máximo");
+                }
 
-    
-    @Transactional
-    public void cancelar(Long id, String emailUsuario, boolean esAdministrador) {
+                Reservacion reservacion = new Reservacion();
+                reservacion.setCliente(cliente);
+                reservacion.setClase(clase);
+                reservacion.setEstado("CONFIRMADA");
 
-    Reservacion reservacion = reservacionRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException(
-                    "No se encontró la reservación"
-            ));
+                return reservacionRepository.save(reservacion);
+        }
 
-    // Verificar que el cliente sea dueño de la reservación
-    if (!esAdministrador &&
-            !reservacion.getCliente().getEmail()
-                    .equalsIgnoreCase(emailUsuario)) {
+        // Cancelar una reservación
+        @Transactional
+        public void cancelar(Long id) {
 
-        throw new RuntimeException(
-                "No puede cancelar una reservación de otro cliente"
-        );
-    }
+                Reservacion reservacion = reservacionRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("No se encontró la reservación"));
 
-    if ("CANCELADA".equals(reservacion.getEstado())) {
-        throw new RuntimeException(
-                "Esta reservación ya fue cancelada"
-        );
-    }
+                reservacion.setEstado("CANCELADA");
 
-    reservacion.setEstado("CANCELADA");
+                reservacionRepository.save(reservacion);
+        }
 
-    reservacionRepository.save(reservacion);
-}
+        // Contar espacios ocupados
+        public long contarOcupados(Long claseId) {
+                return reservacionRepository
+                                .countByClaseIdAndEstado(claseId, "CONFIRMADA");
+        }
+
+        // Calcular espacios disponibles
+        public long contarDisponibles(ClaseGimnasio clase) {
+                long ocupados = contarOcupados(clase.getId());
+
+                return Math.max(0, clase.getCupoMaximo() - ocupados);
+        }
+
+        @Transactional
+        public void cancelar(Long id, String emailUsuario, boolean esAdministrador) {
+
+                Reservacion reservacion = reservacionRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "No se encontró la reservación"));
+
+                // Verificar que el cliente sea dueño de la reservación
+                if (!esAdministrador &&
+                                !reservacion.getCliente().getEmail()
+                                                .equalsIgnoreCase(emailUsuario)) {
+
+                        throw new RuntimeException(
+                                        "No puede cancelar una reservación de otro cliente");
+                }
+
+                if ("CANCELADA".equals(reservacion.getEstado())) {
+                        throw new RuntimeException(
+                                        "Esta reservación ya fue cancelada");
+                }
+
+                reservacion.setEstado("CANCELADA");
+
+                reservacionRepository.save(reservacion);
+        }
 
 }
-

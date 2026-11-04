@@ -34,8 +34,8 @@ public class SecurityConfig {
 
                                                 // Acceso público
                                                 .requestMatchers("/login", "/h2-console/**", "/recuperar-password",
-                                                                "/clientes/recuperar-password", "/reset-password",
-                                                                "/clientes/reset-password")
+                                                                "/usuarios/recuperar-password", "/reset-password",
+                                                                "/usuarios/reset-password")
                                                 .permitAll()
 
                                                 // Reservaciones: administrador
@@ -55,23 +55,23 @@ public class SecurityConfig {
                                                                 "/reservaciones/mis-reservaciones")
                                                 .hasRole("CLIENTE")
 
-                                                // Gestión de clientes: administrador
+                                                // Gestión de usuarios: administrador
                                                 .requestMatchers(
-                                                                "/clientes/nuevo",
-                                                                "/clientes/*/editar",
-                                                                "/clientes/*/actualizar",
-                                                                "/clientes/*/eliminar")
+                                                                "/usuarios/nuevo",
+                                                                "/usuarios/*/editar",
+                                                                "/usuarios/*/actualizar",
+                                                                "/usuarios/*/eliminar")
                                                 .hasRole("ADMIN")
 
                                                 // Perfil del cliente autenticado (CLIENTE y ADMIN)
-                                                .requestMatchers("/perfil", "/clientes/perfil",
-                                                                "/perfil/actualizar", "/clientes/perfil/actualizar")
+                                                .requestMatchers("/perfil", "/usuarios/perfil",
+                                                                "/perfil/actualizar", "/usuarios/perfil/actualizar")
                                                 .hasAnyRole("CLIENTE", "ADMIN")
 
-                                                // Consulta de clientes
+                                                // Consulta de usuarios
                                                 .requestMatchers(
-                                                                "/clientes",
-                                                                "/clientes/*")
+                                                                "/usuarios",
+                                                                "/usuarios/*")
                                                 .authenticated()
 
                                                 // Cualquier otra ruta requiere autenticación
@@ -80,7 +80,7 @@ public class SecurityConfig {
                                 // Inicio de sesión
                                 .formLogin(form -> form
                                                 .loginPage("/login")
-                                                .defaultSuccessUrl("/clientes", true)
+                                                .defaultSuccessUrl("/usuarios", true)
                                                 .failureUrl("/login?error")
                                                 .permitAll())
 

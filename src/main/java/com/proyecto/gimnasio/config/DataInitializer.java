@@ -4,18 +4,18 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.proyecto.gimnasio.model.Cliente;
-import com.proyecto.gimnasio.repository.ClienteRepository;
-import com.proyecto.gimnasio.service.ClienteService;
+import com.proyecto.gimnasio.model.Usuario;
+import com.proyecto.gimnasio.repository.UsuarioRepository;
+import com.proyecto.gimnasio.service.UsuarioService;
 
 @Configuration
 public class DataInitializer {
 
     @Bean
-    CommandLineRunner cargarUsuarios(ClienteRepository repo, ClienteService service) {
+    CommandLineRunner cargarUsuarios(UsuarioRepository repo, UsuarioService service) {
         return args -> {
             if (repo.count() == 0) {
-                service.crear(new Cliente(
+                service.crear(new Usuario(
                         "Administrador",
                         "101010101",
                         "admin@gimnasio.com",
@@ -24,7 +24,7 @@ public class DataInitializer {
                         "88888888",
                         true));
 
-                service.crear(new Cliente(
+                service.crear(new Usuario(
                         "Maria",
                         "202020202",
                         "maria@gimnasio.com",

@@ -41,7 +41,7 @@ public class ClaseGimnasio {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entrenador_id", nullable = false)
-    private Cliente entrenador;
+    private Usuario entrenador;
 
     @NotNull(message = "La fecha es obligatoria")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -93,11 +93,11 @@ public class ClaseGimnasio {
         this.tipo = tipo;
     }
 
-    public Cliente getEntrenador() {
+    public Usuario getEntrenador() {
         return entrenador;
     }
 
-    public void setEntrenador(Cliente entrenador) {
+    public void setEntrenador(Usuario entrenador) {
         this.entrenador = entrenador;
     }
 
@@ -130,4 +130,3 @@ public class ClaseGimnasio {
         this.cupoMaximo = cupoMaximo;
     }
 }
-

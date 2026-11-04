@@ -6,23 +6,23 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.proyecto.gimnasio.model.Cliente;
-import com.proyecto.gimnasio.repository.ClienteRepository;
+import com.proyecto.gimnasio.model.Usuario;
+import com.proyecto.gimnasio.repository.UsuarioRepository;
 
 @Service
-public class ClienteDetailsService implements UserDetailsService {
+public class UsuarioDetailsService implements UserDetailsService {
 
-    private final ClienteRepository repo;
+    private final UsuarioRepository repo;
 
-    public ClienteDetailsService(ClienteRepository repo) {
+    public UsuarioDetailsService(UsuarioRepository repo) {
         this.repo = repo;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Cliente c = repo.findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("El usuario no existe: " + email));
+        Usuario c = repo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("El usuario no existe: " + email));
 
         return User.withUsername(c.getEmail())
                 .password(c.getPassword())

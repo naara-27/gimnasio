@@ -1,7 +1,7 @@
 package com.proyecto.gimnasio.controller;
 
-import com.proyecto.gimnasio.model.Cliente;
-import com.proyecto.gimnasio.service.ClienteService;
+import com.proyecto.gimnasio.model.Usuario;
+import com.proyecto.gimnasio.service.UsuarioService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,22 +12,22 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class PerfilController {
 
-    private final ClienteService service;
+    private final UsuarioService service;
 
-    public PerfilController(ClienteService service) {
+    public PerfilController(UsuarioService service) {
         this.service = service;
     }
 
-    @GetMapping({ "/perfil", "/clientes/perfil" })
+    @GetMapping({ "/perfil", "/usuarios/perfil" })
     public String perfil(Authentication authentication, Model model) {
         String email = authentication.getName();
-        Cliente cliente = service.buscarPorEmail(email);
+        Usuario cliente = service.buscarPorEmail(email);
         model.addAttribute("cliente", cliente);
-        return "clientes/perfil";
+        return "usuarios/perfil";
     }
 
-    @PostMapping({ "/perfil/actualizar", "/clientes/perfil/actualizar" })
-    public String actualizarPerfil(@ModelAttribute("cliente") Cliente cliente,
+    @PostMapping({ "/perfil/actualizar", "/usuarios/perfil/actualizar" })
+    public String actualizarPerfil(@ModelAttribute("cliente") Usuario cliente,
             @RequestParam(required = false) String nuevaPassword,
             @RequestParam(required = false) String confirmPassword,
             Authentication authentication,
@@ -36,14 +36,14 @@ public class PerfilController {
         // Validación de ownership: el ID enviado en el formulario debe coincidir
         // estrictamente con el usuario autenticado. Esto previene manipulaciones
         // de parámetros HTTP (IDs alterados en campos ocultos).
-        Cliente clienteAutenticado = service.buscarPorEmail(authentication.getName());
+        Usuario clienteAutenticado = service.buscarPorEmail(authentication.getName());
         boolean esAdmin = authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         if (!esAdmin && !clienteAutenticado.getId().equals(cliente.getId())) {
             errores.reject("error.perfil",
                     "No tiene permisos para modificar el perfil de otro cliente.");
-            return "clientes/perfil";
+            return "usuarios/perfil";
         }
 
         if (cliente.getNombre() == null || cliente.getNombre().isBlank()) {
@@ -57,20 +57,20 @@ public class PerfilController {
         }
 
         if (errores.hasErrors()) {
-            return "clientes/perfil";
+            return "usuarios/perfil";
         }
 
         if (nuevaPassword != null && !nuevaPassword.isBlank()) {
             if (confirmPassword == null || !nuevaPassword.equals(confirmPassword)) {
                 errores.reject("error.password", "Las contraseñas no coinciden.");
-                return "clientes/perfil";
+                return "usuarios/perfil";
             }
         }
 
         try {
             service.actualizarPerfilCliente(cliente, nuevaPassword);
             flash.addFlashAttribute("mensaje", "Perfil actualizado correctamente.");
-            return "redirect:/clientes/perfil";
+            return "redirect:/usuarios/perfil";
         } catch (IllegalArgumentException e) {
             String mensaje = e.getMessage();
             if (mensaje != null && mensaje.contains("cédula")) {
@@ -80,7 +80,7 @@ public class PerfilController {
             } else {
                 errores.reject("error.global", mensaje);
             }
-            return "clientes/perfil";
+            return "usuarios/perfil";
         }
     }
 }
