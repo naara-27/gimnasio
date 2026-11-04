@@ -24,7 +24,7 @@
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="mb-0">Lista de usuarios</h4>
-            <a sec:authorize="hasRole('ADMIN')" th:href="@{/usuarios/nuevo}" class="btn btn-primary">Nuevo Cliente</a>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/usuarios/nuevo}" class="btn btn-primary">Nuevo Usuario</a>
         </div>
 
         <form class="d-flex mb-3" th:action="@{/usuarios}" method="get">
