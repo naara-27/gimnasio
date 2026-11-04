@@ -16,8 +16,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-    @Table(name = "reservaciones")
-    public class Reservacion {
+@Table(name = "reservaciones")
+public class Reservacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ import jakarta.validation.constraints.NotNull;
     @NotNull(message = "Debe seleccionar un cliente")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente;
+    private Usuario cliente;
 
     @NotNull(message = "Debe seleccionar una clase")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -60,11 +60,11 @@ import jakarta.validation.constraints.NotNull;
         return id;
     }
 
-    public Cliente getCliente() {
+    public Usuario getCliente() {
         return cliente;
     }
 
-    public void setCliente(Cliente cliente) {
+    public void setCliente(Usuario cliente) {
         this.cliente = cliente;
     }
 
@@ -95,4 +95,3 @@ import jakarta.validation.constraints.NotNull;
         return fechaReservacion;
     }
 }
-

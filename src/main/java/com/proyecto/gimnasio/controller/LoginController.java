@@ -13,6 +13,6 @@ public class LoginController {
 
     @GetMapping("/")
     public String inicio() {
-        return "redirect:/clientes";
+        return "redirect:/usuarios";
     }
 }

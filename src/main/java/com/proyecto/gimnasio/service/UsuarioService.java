@@ -6,32 +6,32 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.proyecto.gimnasio.model.Cliente;
-import com.proyecto.gimnasio.repository.ClienteRepository;
+import com.proyecto.gimnasio.model.Usuario;
+import com.proyecto.gimnasio.repository.UsuarioRepository;
 
 @Service
-public class ClienteService {
+public class UsuarioService {
 
-    private final ClienteRepository repo;
+    private final UsuarioRepository repo;
     private final PasswordEncoder passwordEncoder;
 
-    public ClienteService(ClienteRepository repo, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository repo, PasswordEncoder passwordEncoder) {
         this.repo = repo;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<Cliente> listar() {
+    public List<Usuario> listar() {
         return repo.findAll();
     }
 
-    public List<Cliente> buscar(String q) {
+    public List<Usuario> buscar(String q) {
         if (q == null || q.isBlank()) {
             return repo.findAll();
         }
         return repo.findByNombreContainingIgnoreCaseOrCedulaContainingIgnoreCase(q, q);
     }
 
-    public Cliente buscarPorId(Long id) {
+    public Usuario buscarPorId(Long id) {
         return repo.findById(id).orElse(null);
     }
 
@@ -39,7 +39,7 @@ public class ClienteService {
         return repo.existsByEmail(email);
     }
 
-    public Cliente buscarPorEmail(String email) {
+    public Usuario buscarPorEmail(String email) {
         return repo.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("El cliente con email " + email + " no existe."));
     }
@@ -47,7 +47,7 @@ public class ClienteService {
     @Transactional
     public void actualizarPassword(String email, String nuevaPassword) {
 
-        Cliente cliente = repo.findByEmail(email)
+        Usuario cliente = repo.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("El correo no se encuentra registrado."));
 
         if (nuevaPassword == null || nuevaPassword.isBlank()) {
@@ -59,9 +59,9 @@ public class ClienteService {
     }
 
     @Transactional
-    public Cliente actualizarPerfilCliente(Cliente clienteForm, String nuevaPassword) {
+    public Usuario actualizarPerfilCliente(Usuario clienteForm, String nuevaPassword) {
 
-        Cliente existente = repo.findById(clienteForm.getId())
+        Usuario existente = repo.findById(clienteForm.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
 
         if (clienteForm.getNombre() == null || clienteForm.getNombre().isBlank()) {
@@ -105,7 +105,7 @@ public class ClienteService {
     }
 
     @Transactional
-    public Cliente crear(Cliente cliente) {
+    public Usuario crear(Usuario cliente) {
 
         if (repo.existsByCedula(cliente.getCedula())) {
             throw new IllegalArgumentException("La cédula ya está registrada");
@@ -125,9 +125,9 @@ public class ClienteService {
     }
 
     @Transactional
-    public Cliente actualizar(Long id, Cliente datos) {
+    public Usuario actualizar(Long id, Usuario datos) {
 
-        Cliente existente = buscarPorId(id);
+        Usuario existente = buscarPorId(id);
 
         if (existente == null) {
             throw new IllegalArgumentException("Cliente no encontrado " + id);
@@ -160,7 +160,7 @@ public class ClienteService {
     @Transactional
     public void eliminar(Long id, String emailActual) {
 
-        Cliente existente = buscarPorId(id);
+        Usuario existente = buscarPorId(id);
 
         if (existente == null) {
             throw new IllegalArgumentException("Cliente no encontrado " + id);

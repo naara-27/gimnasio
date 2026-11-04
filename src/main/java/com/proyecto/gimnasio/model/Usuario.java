@@ -12,8 +12,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "clientes")
-public class Cliente {
+@Table(name = "usuarios")
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,10 +45,11 @@ public class Cliente {
     @Column(nullable = false)
     private boolean activo = true;
 
-    public Cliente() {
+    public Usuario() {
     }
 
-    public Cliente(String nombre, String cedula, String email, String password, String rol, String telefono, boolean activo) {
+    public Usuario(String nombre, String cedula, String email, String password, String rol, String telefono,
+            boolean activo) {
         this.nombre = nombre;
         this.cedula = cedula;
         this.email = email;
