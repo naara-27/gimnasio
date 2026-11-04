@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
@@ -41,21 +40,17 @@
                         <!-- Nombre -->
                         <div class="mb-3">
                             <label class="form-label">Nombre de la clase</label>
-
                             <input type="text"
                                    th:field="*{nombre}"
                                    class="form-control"
                                    placeholder="Ejemplo: Yoga"
                                    required>
-
-                            <div class="text-danger"
-                                 th:errors="*{nombre}"></div>
+                            <div class="text-danger" th:errors="*{nombre}"></div>
                         </div>
 
                         <!-- Tipo -->
                         <div class="mb-3">
                             <label class="form-label">Tipo de clase</label>
-
                             <select th:field="*{tipo}" class="form-select" required>
                                 <option value="">Seleccione el tipo</option>
                                 <option value="Cardio">Cardio</option>
@@ -65,97 +60,74 @@
                                 <option value="Spinning">Spinning</option>
                                 <option value="Funcional">Entrenamiento funcional</option>
                             </select>
-
-                            <div class="text-danger"
-                                 th:errors="*{tipo}"></div>
+                            <div class="text-danger" th:errors="*{tipo}"></div>
                         </div>
 
-                        <!-- Entrenador -->
+                        <!-- Entrenador (CORREGIDO con name="entrenadorId") -->
                         <div class="mb-3">
                             <label class="form-label">Entrenador</label>
-
+                            
                             <select name="entrenadorId" class="form-select" required>
-
                                 <option value="">Seleccione un entrenador</option>
-
                                 <option th:each="entrenador : ${entrenadores}"
                                         th:value="${entrenador.id}"
                                         th:text="${entrenador.nombre}"
                                         th:selected="${clase.entrenador != null and clase.entrenador.id == entrenador.id}">
                                 </option>
-
                             </select>
 
-                            <div class="text-danger"
-                                 th:errors="*{entrenador}"></div>
+                            <div class="text-danger" th:errors="*{entrenador}"></div>
                         </div>
 
                         <!-- Fecha -->
                         <div class="mb-3">
                             <label class="form-label">Fecha de la clase</label>
-
                             <input type="date"
                                    th:field="*{fecha}"
                                    class="form-control"
                                    required>
-
-                            <div class="text-danger"
-                                 th:errors="*{fecha}"></div>
+                            <div class="text-danger" th:errors="*{fecha}"></div>
                         </div>
 
                         <!-- Hora de inicio -->
                         <div class="mb-3">
                             <label class="form-label">Hora de inicio</label>
-
                             <input type="time"
                                    th:field="*{horaInicio}"
                                    class="form-control"
                                    required>
-
-                            <div class="text-danger"
-                                 th:errors="*{horaInicio}"></div>
+                            <div class="text-danger" th:errors="*{horaInicio}"></div>
                         </div>
 
                         <!-- Duración -->
                         <div class="mb-3">
                             <label class="form-label">Duración</label>
-
                             <input type="text"
                                    class="form-control"
                                    value="1 hora"
                                    readonly>
-
-                            <small class="text-muted">
-                                La hora de finalización se calcula automáticamente.
-                            </small>
+                            <small class="text-muted">La hora de finalización se calcula automáticamente.</small>
                         </div>
 
                         <!-- Cupo máximo -->
                         <div class="mb-3">
                             <label class="form-label">Cupo máximo</label>
-
                             <input type="number"
                                    th:field="*{cupoMaximo}"
                                    class="form-control"
                                    min="1"
                                    required>
-
-                            <div class="text-danger"
-                                 th:errors="*{cupoMaximo}"></div>
+                            <div class="text-danger" th:errors="*{cupoMaximo}"></div>
                         </div>
 
                         <!-- Botones -->
                         <div class="d-flex gap-2 mt-4">
-
                             <button type="submit" class="btn btn-primary">
                                 Guardar clase
                             </button>
-
-                            <a th:href="@{/clases}"
-                               class="btn btn-secondary">
+                            <a th:href="@{/clases}" class="btn btn-secondary">
                                 Cancelar
                             </a>
-
                         </div>
 
                     </form>
