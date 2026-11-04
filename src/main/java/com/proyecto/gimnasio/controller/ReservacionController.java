@@ -10,21 +10,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.proyecto.gimnasio.model.Cliente;
+import com.proyecto.gimnasio.model.Usuario;
 import com.proyecto.gimnasio.repository.ClaseGimnasioRepository;
-import com.proyecto.gimnasio.repository.ClienteRepository;
+import com.proyecto.gimnasio.repository.UsuarioRepository;
 import com.proyecto.gimnasio.service.ReservacionService;
 
 @Controller
 public class ReservacionController {
 
     private final ReservacionService service;
-    private final ClienteRepository clienteRepository;
+    private final UsuarioRepository clienteRepository;
     private final ClaseGimnasioRepository claseRepository;
 
     public ReservacionController(
             ReservacionService service,
-            ClienteRepository clienteRepository,
+            UsuarioRepository clienteRepository,
             ClaseGimnasioRepository claseRepository) {
 
         this.service = service;
@@ -44,43 +44,38 @@ public class ReservacionController {
     public String misReservaciones(
             Authentication authentication, Model model) {
 
-        Cliente cliente = clienteRepository.findByEmail(authentication.getName())
+        Usuario cliente = clienteRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("No se encontró el cliente"));
 
         model.addAttribute(
                 "reservaciones",
-                service.listarPorCliente(cliente.getId())
-        );
+                service.listarPorCliente(cliente.getId()));
 
         return "reservaciones/lista";
     }
 
     // Muestra las clases disponibles para reservar
-    
+
     @GetMapping("/reservaciones/nueva")
     public String nueva(Model model) {
 
         var clases = claseRepository.findAll();
 
         var clasesDisponibles = clases.stream()
-            .filter(clase -> service.contarDisponibles(clase) > 0)
-            .toList();
+                .filter(clase -> service.contarDisponibles(clase) > 0)
+                .toList();
 
         model.addAttribute("clases", clasesDisponibles);
 
         model.addAttribute(
-            "cuposDisponibles",
-            clasesDisponibles.stream().collect(
-                    java.util.stream.Collectors.toMap(
-                            clase -> clase.getId(),
-                            clase -> service.contarDisponibles(clase)
-                    )
-            )
-    );
+                "cuposDisponibles",
+                clasesDisponibles.stream().collect(
+                        java.util.stream.Collectors.toMap(
+                                clase -> clase.getId(),
+                                clase -> service.contarDisponibles(clase))));
 
-    return "reservaciones/nueva";
+        return "reservaciones/nueva";
     }
-
 
     // Reserva una clase utilizando el cliente que inició sesión
     @PostMapping("/reservaciones/guardar")
@@ -90,15 +85,14 @@ public class ReservacionController {
             RedirectAttributes flash) {
 
         try {
-            Cliente cliente = clienteRepository.findByEmail(authentication.getName())
+            Usuario cliente = clienteRepository.findByEmail(authentication.getName())
                     .orElseThrow(() -> new RuntimeException("No se encontró el cliente"));
 
             service.reservar(cliente.getId(), claseId);
 
             flash.addFlashAttribute(
                     "ok",
-                    "¡Tu cupo fue reservado correctamente!"
-            );
+                    "¡Tu cupo fue reservado correctamente!");
 
         } catch (RuntimeException e) {
             flash.addFlashAttribute("error", e.getMessage());
@@ -110,36 +104,33 @@ public class ReservacionController {
     // Cancela una reservación
     @PostMapping("/reservaciones/{id}/cancelar")
     public String cancelar(
-        @PathVariable Long id,
-        Authentication authentication,
-        RedirectAttributes flash) {
+            @PathVariable Long id,
+            Authentication authentication,
+            RedirectAttributes flash) {
 
-    boolean esAdministrador = authentication.getAuthorities()
-            .stream()
-            .anyMatch(autoridad ->
-                    autoridad.getAuthority().equals("ROLE_ADMIN"));
+        boolean esAdministrador = authentication.getAuthorities()
+                .stream()
+                .anyMatch(autoridad -> autoridad.getAuthority().equals("ROLE_ADMIN"));
 
-    try {
-        service.cancelar(
-                id,
-                authentication.getName(),
-                esAdministrador
-        );
+        try {
+            service.cancelar(
+                    id,
+                    authentication.getName(),
+                    esAdministrador);
 
-        flash.addFlashAttribute(
-                "ok",
-                "Reservación cancelada correctamente"
-        );
+            flash.addFlashAttribute(
+                    "ok",
+                    "Reservación cancelada correctamente");
 
-    } catch (RuntimeException e) {
-        flash.addFlashAttribute("error", e.getMessage());
-    }
+        } catch (RuntimeException e) {
+            flash.addFlashAttribute("error", e.getMessage());
+        }
 
-    if (esAdministrador) {
-        return "redirect:/reservaciones";
-    }
+        if (esAdministrador) {
+            return "redirect:/reservaciones";
+        }
 
-    return "redirect:/reservaciones/mis-reservaciones";
+        return "redirect:/reservaciones/mis-reservaciones";
     }
 
 }

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.proyecto.gimnasio.model.ClaseGimnasio;
-import com.proyecto.gimnasio.model.Cliente;
-import com.proyecto.gimnasio.repository.ClienteRepository;
+import com.proyecto.gimnasio.model.Usuario;
+import com.proyecto.gimnasio.repository.UsuarioRepository;
 import com.proyecto.gimnasio.service.ClaseGimnasioService;
 
 import jakarta.validation.Valid;
@@ -26,11 +26,11 @@ import jakarta.validation.Valid;
 public class ClaseController {
 
     private final ClaseGimnasioService service;
-    private final ClienteRepository clienteRepository;
+    private final UsuarioRepository clienteRepository;
 
     public ClaseController(
             ClaseGimnasioService service,
-            ClienteRepository clienteRepository) {
+            UsuarioRepository clienteRepository) {
 
         this.service = service;
         this.clienteRepository = clienteRepository;
@@ -199,24 +199,22 @@ public class ClaseController {
     }
 
     // Obtener entrenadores activos
-    private List<Cliente> obtenerEntrenadores() {
+    private List<Usuario> obtenerEntrenadores() {
 
-    List<Cliente> entrenadores =
-            clienteRepository.findByRolAndActivoTrue("ENTRENADOR");
+        List<Usuario> entrenadores = clienteRepository.findByRolAndActivoTrue("ENTRENADOR");
 
-    System.out.println("ENTRENADORES ENCONTRADOS: " + entrenadores.size());
+        System.out.println("ENTRENADORES ENCONTRADOS: " + entrenadores.size());
 
-    for (Cliente entrenador : entrenadores) {
-        System.out.println(
-                "ID: " + entrenador.getId()
-                + " - Nombre: " + entrenador.getNombre()
-                + " - Rol: " + entrenador.getRol()
-                + " - Activo: " + entrenador.isActivo()
-        );
+        for (Usuario entrenador : entrenadores) {
+            System.out.println(
+                    "ID: " + entrenador.getId()
+                            + " - Nombre: " + entrenador.getNombre()
+                            + " - Rol: " + entrenador.getRol()
+                            + " - Activo: " + entrenador.isActivo());
+        }
+
+        return entrenadores;
     }
-
-    return entrenadores;
-    }   
 
     // Comprobar que el usuario seleccionado sea un entrenador activo
     private void asignarEntrenador(
@@ -224,7 +222,7 @@ public class ClaseController {
             Long entrenadorId,
             BindingResult errores) {
 
-        Cliente entrenador = clienteRepository.findById(entrenadorId)
+        Usuario entrenador = clienteRepository.findById(entrenadorId)
                 .orElse(null);
 
         if (entrenador == null

@@ -7,9 +7,9 @@
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark px-3">
-        <span class="navbar-brand">Gestión de Clientes</span>
+        <span class="navbar-brand">Gestión de usuarios</span>
         <div class="d-flex align-items-center gap-3">
-            <a th:href="@{/clientes/perfil}" class="text-white text-decoration-none">Mi Perfil</a>
+            <a th:href="@{/usuarios/perfil}" class="text-white text-decoration-none">Mi Perfil</a>
             <span class="text-white">Hola, <b sec:authentication="name"></b></span>
             <form th:action="@{/logout}" method="post">
                 <button class="btn btn-outline-light btn-sm">Salir</button>
@@ -72,13 +72,13 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">Actualizar Perfil</button>
-                    <a th:href="@{/clientes/perfil}" class="btn btn-secondary">Cancelar</a>
+                    <a th:href="@{/usuarios/perfil}" class="btn btn-secondary">Cancelar</a>
                 </form>
             </div>
         </div>
 
         <div class="mt-3">
-            <a th:href="@{/clientes}" class="btn btn-outline-secondary">Volver al listado</a>
+            <a th:href="@{/usuarios}" class="btn btn-outline-secondary">Volver al listado</a>
         </div>
     </div>
 </body>

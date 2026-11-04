@@ -1,7 +1,7 @@
 package com.proyecto.gimnasio.controller;
 
-import com.proyecto.gimnasio.model.Cliente;
-import com.proyecto.gimnasio.service.ClienteService;
+import com.proyecto.gimnasio.model.Usuario;
+import com.proyecto.gimnasio.service.UsuarioService;
 import jakarta.validation.Valid;
 
 import java.security.Principal;
@@ -14,76 +14,76 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/clientes")
-public class ClienteController {
+@RequestMapping("/usuarios")
+public class UsuarioController {
 
-    private final ClienteService service;
+    private final UsuarioService service;
 
-    public ClienteController(ClienteService service) {
+    public UsuarioController(UsuarioService service) {
         this.service = service;
     }
 
     @GetMapping
     public String listar(@RequestParam(required = false) String q, Model model) {
-        model.addAttribute("clientes", service.buscar(q));
+        model.addAttribute("usuarios", service.buscar(q));
         model.addAttribute("q", q);
-        return "clientes/lista";
+        return "usuarios/lista";
     }
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
-        model.addAttribute("cliente", new Cliente());
+        model.addAttribute("cliente", new Usuario());
         model.addAttribute("modo", "crear");
-        return "clientes/formulario";
+        return "usuarios/formulario";
     }
 
     @PostMapping("/guardar")
-    public String guardar(@Valid @ModelAttribute("cliente") Cliente cliente,
+    public String guardar(@Valid @ModelAttribute("cliente") Usuario cliente,
             BindingResult errores, Model model, RedirectAttributes flash) {
 
         if (errores.hasErrors()) {
             model.addAttribute("modo", "crear");
-            return "clientes/formulario";
+            return "usuarios/formulario";
         }
 
         try {
             service.crear(cliente);
             flash.addFlashAttribute("mensaje", "Cliente creado correctamente");
-            return "redirect:/clientes";
+            return "redirect:/usuarios";
         } catch (IllegalArgumentException e) {
             model.addAttribute("modo", "crear");
             model.addAttribute("error", e.getMessage());
-            return "clientes/formulario";
+            return "usuarios/formulario";
         }
     }
 
     @GetMapping("/{id}/editar")
     public String editar(@PathVariable Long id, Model model) {
-        Cliente c = service.buscarPorId(id);
+        Usuario c = service.buscarPorId(id);
         c.setPassword("");
         model.addAttribute("cliente", c);
         model.addAttribute("modo", "editar");
-        return "clientes/formulario";
+        return "usuarios/formulario";
     }
 
     @PostMapping("/{id}/actualizar")
     public String actualizar(@PathVariable Long id,
-            @Valid @ModelAttribute("cliente") Cliente cliente,
+            @Valid @ModelAttribute("cliente") Usuario cliente,
             BindingResult errores, Model model, RedirectAttributes flash) {
 
         if (errores.hasErrors()) {
             model.addAttribute("modo", "editar");
-            return "clientes/formulario";
+            return "usuarios/formulario";
         }
 
         try {
             service.actualizar(id, cliente);
             flash.addFlashAttribute("mensaje", "Cliente actualizado correctamente");
-            return "redirect:/clientes";
+            return "redirect:/usuarios";
         } catch (IllegalArgumentException e) {
             model.addAttribute("modo", "editar");
             model.addAttribute("error", e.getMessage());
-            return "clientes/formulario";
+            return "usuarios/formulario";
         }
     }
 
@@ -99,7 +99,7 @@ public class ClienteController {
             flash.addFlashAttribute("error", e.getMessage());
         }
 
-        return "redirect:/clientes";
+        return "redirect:/usuarios";
     }
 
     @GetMapping("/{id}")
@@ -108,7 +108,7 @@ public class ClienteController {
             RedirectAttributes flash,
             Authentication authentication) {
 
-        Cliente clienteAutenticado = service.buscarPorEmail(authentication.getName());
+        Usuario clienteAutenticado = service.buscarPorEmail(authentication.getName());
         boolean esAdmin = authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
@@ -117,20 +117,20 @@ public class ClienteController {
         if (!esAdmin && !clienteAutenticado.getId().equals(id)) {
             flash.addFlashAttribute("error",
                     "No tiene permisos para ver el perfil de otro cliente.");
-            return "redirect:/clientes/perfil";
+            return "redirect:/usuarios/perfil";
         }
 
-        Cliente c = service.buscarPorId(id);
+        Usuario c = service.buscarPorId(id);
 
         if (c == null) {
             flash.addFlashAttribute("error",
                     "El cliente con ID " + id + " no existe.");
-            return "redirect:/clientes";
+            return "redirect:/usuarios";
         }
 
         model.addAttribute("cliente", c);
 
-        return "clientes/detalle";
+        return "usuarios/detalle";
     }
 
     @GetMapping("/recuperar-password")
@@ -146,12 +146,12 @@ public class ClienteController {
         if (service.existeEmail(email)) {
             flash.addFlashAttribute("mensaje",
                     "El correo ingresado está registrado. Puede proceder a reestablecer su contraseña.");
-            return "redirect:/clientes/reset-password?email=" + email;
+            return "redirect:/usuarios/reset-password?email=" + email;
         }
 
         flash.addFlashAttribute("error",
                 "El correo ingresado no se encuentra registrado.");
-        return "redirect:/clientes/recuperar-password";
+        return "redirect:/usuarios/recuperar-password";
     }
 
     @GetMapping("/reset-password")
@@ -169,7 +169,7 @@ public class ClienteController {
         if (!password.equals(confirmPassword)) {
             flash.addFlashAttribute("error", "Las contraseñas no coinciden.");
             flash.addFlashAttribute("email", email);
-            return "redirect:/clientes/reset-password?email=" + email;
+            return "redirect:/usuarios/reset-password?email=" + email;
         }
 
         try {
@@ -179,7 +179,7 @@ public class ClienteController {
         } catch (IllegalArgumentException e) {
             flash.addFlashAttribute("error", e.getMessage());
             flash.addFlashAttribute("email", email);
-            return "redirect:/clientes/reset-password?email=" + email;
+            return "redirect:/usuarios/reset-password?email=" + email;
         }
     }
 }

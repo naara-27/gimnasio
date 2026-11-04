@@ -1,12 +1,12 @@
 # Gimnasio - Sistema de Gestión v1.0
 
-Sistema web de gestión para gimnasios desarrollado con **Java Spring Boot**, **Spring Security**, **Thymeleaf** y **JPA/H2**. Permite administrar clientes, clases, reservaciones y procesos de recuperación de contraseña con autenticación y autorización basada en roles.
+Sistema web de gestión para gimnasios desarrollado con **Java Spring Boot**, **Spring Security**, **Thymeleaf** y **JPA/H2**. Permite administrar usuarios, clases, reservaciones y procesos de recuperación de contraseña con autenticación y autorización basada en roles.
 
 ---
 
 ## 📋 Introducción
 
-Este proyecto es una aplicación web para la gestión integral de un gimnasio. Incluye módulos de clientes, clases, reservaciones, autenticación de usuarios y recuperación de contraseña. Está construido con tecnologías Java modernas y sigue una arquitectura basada en capas (Controlador, Servicio, Repositorio, Modelo).
+Este proyecto es una aplicación web para la gestión integral de un gimnasio. Incluye módulos de usuarios, clases, reservaciones, autenticación de usuarios y recuperación de contraseña. Está construido con tecnologías Java modernas y sigue una arquitectura basada en capas (Controlador, Servicio, Repositorio, Modelo).
 
 **Versión actual:** 1.0
 
@@ -40,7 +40,7 @@ src/main/java/com/proyecto/gimnasio/
 ```text
 src/main/resources/templates/
 ├── clases/             # Vistas de gestión de clases
-├── clientes/           # Vistas de clientes (lista, detalle, formulario, perfil)
+├── usuarios/           # Vistas de usuarios (lista, detalle, formulario, perfil)
 ├── login.html          # Página de inicio de sesión
 ├── recuperar-password.html   # Solicitud de recuperación de contraseña
 ├── reset-password.html       # Restablecimiento de contraseña
@@ -51,13 +51,15 @@ src/main/resources/templates/
 
 ## 🚀 Módulos principales
 
-### 1. Gestión de Clientes
-- Listado, creación, edición y eliminación de clientes (solo ADMIN).
+### 1. Gestión de usuarios
+
+- Listado, creación, edición y eliminación de usuarios (solo ADMIN).
 - Consulta de detalle de cliente.
 - Perfil propio autenticado (`/perfil`) donde el cliente puede editar sus datos personales (nombre, cédula, teléfono, correo y contraseña).
 - Validaciones de negocio: cédula y correo únicos, rol restringido.
 
 ### 2. Autenticación y Seguridad
+
 - Login con correo y contraseña (`/login`).
 - Roles soportados: `ADMIN` y `CLIENTE`.
 - Protección de rutas mediante Spring Security.
@@ -65,6 +67,7 @@ src/main/resources/templates/
 - Cierre de sesión (`/logout`).
 
 ### 3. Recuperación de Contraseña
+
 - Flujo público (`/recuperar-password`): el usuario ingresa su correo.
 - Validación de existencia del correo en la base de datos.
 - Si existe, se redirige al formulario de reestablecimiento (`/reset-password`).
@@ -72,6 +75,7 @@ src/main/resources/templates/
 - Al finalizar, redirección al login con mensaje de éxito.
 
 ### 4. Gestión de Clases y Reservaciones
+
 - CRUD de clases de gimnasio.
 - Creación y consulta de reservaciones.
 - Cancelación de reservaciones (ADMIN y CLIENTE).
@@ -81,29 +85,31 @@ src/main/resources/templates/
 
 ## 🔐 Seguridad y Control de Acceso
 
-| Ruta | Rol requerido | Descripción |
-|------|--------------|-------------|
-| `/login` | Público | Inicio de sesión |
-| `/recuperar-password`, `/reset-password` | Público | Recuperación de contraseña |
-| `/perfil`, `/clientes/perfil` | CLIENTE, ADMIN | Perfil del usuario autenticado |
-| `/clientes` | Autenticado | Listado de clientes |
-| `/clientes/{id}` | Autenticado (dueño o ADMIN) | Detalle de cliente |
-| `/clientes/nuevo`, `/clientes/*/editar`, etc. | ADMIN | Gestión de clientes |
-| `/reservaciones/nueva`, `/reservaciones/mis-reservaciones` | CLIENTE | Reservaciones del cliente |
-| `/reservaciones`, `/reservaciones/*/cancelar` | ADMIN, CLIENTE | Gestión de reservaciones |
+| Ruta                                                       | Rol requerido               | Descripción                    |
+| ---------------------------------------------------------- | --------------------------- | ------------------------------ |
+| `/login`                                                   | Público                     | Inicio de sesión               |
+| `/recuperar-password`, `/reset-password`                   | Público                     | Recuperación de contraseña     |
+| `/perfil`, `/usuarios/perfil`                              | CLIENTE, ADMIN              | Perfil del usuario autenticado |
+| `/usuarios`                                                | Autenticado                 | Listado de usuarios            |
+| `/usuarios/{id}`                                           | Autenticado (dueño o ADMIN) | Detalle de cliente             |
+| `/usuarios/nuevo`, `/usuarios/*/editar`, etc.              | ADMIN                       | Gestión de usuarios            |
+| `/reservaciones/nueva`, `/reservaciones/mis-reservaciones` | CLIENTE                     | Reservaciones del cliente      |
+| `/reservaciones`, `/reservaciones/*/cancelar`              | ADMIN, CLIENTE              | Gestión de reservaciones       |
 
 - Cada cliente solo puede consultar y modificar **su propio perfil**. Cualquier intento de manipular el ID de otro cliente mediante parámetros HTTP es rechazado.
-- El administrador tiene acceso total a la gestión de clientes y reservaciones.
+- El administrador tiene acceso total a la gestión de usuarios y reservaciones.
 
 ---
 
 ## ▶️ Cómo ejecutar el proyecto
 
 ### Requisitos previos
+
 - JDK 27 instalado
 - Maven (o usar `./mvnw` incluido)
 
 ### Pasos
+
 1. Clonar el repositorio.
 2. Ejecutar la aplicación:
    ```bash
@@ -112,6 +118,7 @@ src/main/resources/templates/
 3. Acceder en el navegador: `http://localhost:8080`
 
 ### Credenciales de prueba (cargadas automáticamente)
+
 - **Administrador:** `admin@gimnasio.com` / `admin123` (rol ADMIN)
 - **Cliente:** `maria@gimnasio.com` / `maria123` (rol CLIENTE)
 
@@ -126,6 +133,7 @@ El proyecto incluye pruebas unitarias y de integración ubicadas en `src/test/ja
 ```
 
 Entre las pruebas destacadas:
+
 - Restricción de ownership en el perfil del cliente (no puede editar perfiles ajenos).
 - Acceso del administrador a cualquier perfil.
 
@@ -133,9 +141,9 @@ Entre las pruebas destacadas:
 
 ## 📦 Versiones
 
-| Versión | Fecha | Descripción |
-|---------|-------|-------------|
-| 1.0 | Noviembre 2026 | Versión inicial del sistema de gestión de gimnasio |
+| Versión | Fecha          | Descripción                                        |
+| ------- | -------------- | -------------------------------------------------- |
+| 1.0     | Noviembre 2026 | Versión inicial del sistema de gestión de gimnasio |
 
 ---
 
@@ -144,7 +152,7 @@ Entre las pruebas destacadas:
 Esta es la versión **1.0** del sistema de gestión de gimnasio. En futuras actualizaciones se planea incluir:
 
 - Módulo de pagos y membresías.
-- Historial de asistencia de clientes.
+- Historial de asistencia de usuarios.
 - Notificaciones por correo electrónico.
 - Exportación de reportes a PDF/Excel.
 - Interfaz responsive mejorada para dispositivos móviles.
